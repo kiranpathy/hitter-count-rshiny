@@ -1,5 +1,6 @@
 #App for Hitting (Counts)
 
+library(shiny)
 library(plyr)
 library(dplyr)
 library(devtools)
@@ -20,6 +21,7 @@ library(lubridate)
 library(ggpubr)
 library(paletteer)
 library(shinyWidgets)
+library(shinythemes)
 
 #setting generalized strike zone dimensions (while strikezone changes batter-to-batter, this provides an average/estimate to be consistent)
 left <- -8.5/12
@@ -82,8 +84,8 @@ df <- df %>%
   )
 
 #UI
-ui <- navbarPage("Hitters",
-                 theme = "flatly",
+ui <- navbarPage("Hitters", 
+                 theme = shinythemes::shinytheme("cerulean"),
                  tabPanel("Strike Zone",
                           sidebarLayout(
                             sidebarPanel(
@@ -134,7 +136,7 @@ server = function(input, output, session) {
   #log in credentials
   creds <- data.frame(
     user     = "staff",
-    password = "floyaBALL25",
+    password = "ffyalls2025",
     stringsAsFactors = FALSE
   )
   
@@ -169,11 +171,12 @@ server = function(input, output, session) {
              PlayResult %in% input$Result,
              Count %in% input$Count,
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              CustomGameID %in% c(input$GameInput)) %>%
       ggplot(TestTrackMan, mapping = aes(x = PlateLocSide, y = PlateLocHeight)) +
       geom_point(aes(color = PitchGroup), size = 3) +
       scale_color_manual(values = c(Fastball = "red",
-                                    Off-Speed = "green",
+                                    `Off-Speed` = "green",
                                     Breaking = "blue")) +
       geom_segment(x = left, y = bottom, xend = right, yend = bottom) +
       geom_segment(x = left, y = top, xend = right, yend = top) +
@@ -206,12 +209,13 @@ server = function(input, output, session) {
              PlayResult %in% input$Result,
              Count %in% input$Count,
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              PitchCall == "InPlay",
              CustomGameID %in% c(input$GameInput)) %>%
       ggplot(TestTrackMan, mapping = aes(x = PlateLocSide, y = PlateLocHeight)) +
       geom_point(aes(color = PitchGroup), size = 3) +
       scale_color_manual(values = c(Fastball = "red",
-                                    Off-Speed = "green",
+                                    `Off-Speed` = "green",
                                     Breaking = "blue")) +
       geom_segment(x = left, y = bottom, xend = right, yend = bottom) +
       geom_segment(x = left, y = top, xend = right, yend = top) +
@@ -245,13 +249,14 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              chase == 1,
              PlayResult %in% input$Result,
+             PitcherThrows %in% input$PitcherHandedness,
              PitchGroup %in% input$Pitch,
              Count %in% input$Count,
              CustomGameID %in% c(input$GameInput)) %>%
       ggplot(TestTrackMan, mapping = aes(x = PlateLocSide, y = PlateLocHeight)) +
       geom_point(aes(color = PitchGroup), size = 3) +
       scale_color_manual(values = c(Fastball = "red",
-                                    Off-Speed = "green",
+                                    `Off-Speed` = "green",
                                     Breaking = "blue")) +
       geom_segment(x = left, y = bottom, xend = right, yend = bottom) +
       geom_segment(x = left, y = top, xend = right, yend = top) +
@@ -284,13 +289,14 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              whiff == 1,
              PlayResult %in% input$Result,
+             PitcherThrows %in% input$PitcherHandedness,
              PitchGroup %in% input$Pitch,
              Count %in% input$Count,
              CustomGameID %in% c(input$GameInput)) %>%
       ggplot(TestTrackMan, mapping = aes(x = PlateLocSide, y = PlateLocHeight)) +
       geom_point(aes(color = PitchGroup), size = 3) +
       scale_color_manual(values = c(Fastball = "red",
-                                    Off-Speed = "green",
+                                    `Off-Speed` = "green",
                                     Breaking = "blue")) +
       geom_segment(x = left, y = bottom, xend = right, yend = bottom) +
       geom_segment(x = left, y = top, xend = right, yend = top) +
@@ -325,13 +331,14 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              ExitSpeed >= 95,
              PlayResult %in% input$Result,
+             PitcherThrows %in% input$PitcherHandedness,
              PitchGroup %in% input$Pitch,
              Count %in% input$Count,
              CustomGameID %in% c(input$GameInput)) %>%
       ggplot(TestTrackMan, mapping = aes(x = PlateLocSide, y = PlateLocHeight)) +
       geom_point(aes(color = PitchGroup), size = 3) +
       scale_color_manual(values = c(Fastball = "red",
-                                    Off-Speed = "green",
+                                    `Off-Speed` = "green",
                                     Breaking = "blue")) +
       geom_segment(x = left, y = bottom, xend = right, yend = bottom) +
       geom_segment(x = left, y = top, xend = right, yend = top) +
@@ -435,6 +442,7 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              PitchGroup == "Fastball",
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              PlayResult      %in% input$Result,
              Count           %in% input$Count,
              CustomGameID    %in% input$GameInput) %>%         
@@ -481,6 +489,7 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              PitchGroup == "Off-Speed",
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              PlayResult      %in% input$Result,
              Count           %in% input$Count,
              CustomGameID    %in% input$GameInput) %>%         
@@ -527,6 +536,7 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              PitchGroup == "Breaking",
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              PlayResult      %in% input$Result,
              Count           %in% input$Count,
              CustomGameID    %in% input$GameInput) %>%         
@@ -568,7 +578,7 @@ server = function(input, output, session) {
         }
       }
     
-    ggarrange(FBplot, OFSplot, BRKplot, ncol = 1, nrow = 3)
+    ggarrange(FBplot, OFSplot, BRKplot, ncol = 3, nrow = 1)
     
   })
   
@@ -587,6 +597,7 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              PitchGroup == "Fastball",
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              PlayResult      %in% input$Result,
              Count           %in% input$Count,
              CustomGameID    %in% input$GameInput) %>%         
@@ -633,6 +644,7 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              PitchGroup == "Off-Speed",
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              PlayResult      %in% input$Result,
              Count           %in% input$Count,
              CustomGameID    %in% input$GameInput) %>%         
@@ -679,6 +691,7 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              PitchGroup == "Breaking",
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              PlayResult      %in% input$Result,
              Count           %in% input$Count,
              CustomGameID    %in% input$GameInput) %>%         
@@ -720,7 +733,7 @@ server = function(input, output, session) {
         }
       }
     
-    ggarrange(FBplot, OFSplot, BRKplot, ncol = 1, nrow = 3)
+    ggarrange(FBplot, OFSplot, BRKplot, ncol = 3, nrow = 1)
     
   })
   
@@ -738,6 +751,7 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              PitchGroup == "Fastball",
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              PlayResult      %in% input$Result,
              Count           %in% input$Count,
              CustomGameID    %in% input$GameInput) %>%         
@@ -784,6 +798,7 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              PitchGroup == "Off-Speed",
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              PlayResult      %in% input$Result,
              Count           %in% input$Count,
              CustomGameID    %in% input$GameInput) %>%         
@@ -830,6 +845,7 @@ server = function(input, output, session) {
              Batter == input$Hitter,
              PitchGroup == "Breaking",
              PitchGroup %in% input$Pitch,
+             PitcherThrows %in% input$PitcherHandedness,
              PlayResult      %in% input$Result,
              Count           %in% input$Count,
              CustomGameID    %in% input$GameInput) %>%         
@@ -871,7 +887,7 @@ server = function(input, output, session) {
         }
       }
   
-    ggarrange(FBplot, OFSplot, BRKplot, ncol = 1, nrow = 3)
+    ggarrange(FBplot, OFSplot, BRKplot, ncol = 3, nrow = 1)
     
   })
   
