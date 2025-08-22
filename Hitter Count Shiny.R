@@ -24,8 +24,8 @@ library(shinyWidgets)
 #setting generalized strike zone dimensions (while strikezone changes batter-to-batter, this provides an average/estimate to be consistent)
 left <- -8.5/12
 right <- 8.5/12
-top <- 44.08/12
-bottom <- 18.29/12
+top <- 43/12
+bottom <- 20/12
 width <- (right - left) / 3
 height <- (top - bottom) / 3
 
@@ -34,14 +34,20 @@ df <- read_csv("df.csv")
 #alterations to ensure pitches are labeled correctly (differs by data, here are examples of alterations)
 #additionally, for this specific project I filtered out any unidentified pitches as well as only focused on data pertaining to my specific team
 df <- df %>%
-  mutate(TaggedPitchType = ifelse(
-    TaggedPitchType == "SInker", "Sinker", TaggedPitchType
-  ),
-  TaggedPitchType = ifelse(TaggedPitchType == "ChangeUp", "Changeup", TaggedPitchType)) %>%
-  mutate(Count = paste0(Balls, "-", Strikes)) %>%
-  filter(TaggedPitchType != "Undefined",
-         TaggedPitchType != "Other",
-         BatterTeam == "My_Team")
+  mutate(
+    AutoPitchType = case_when(
+      AutoPitchType %in% c("FourSeamFastBall", "FourSeamFastball", "FourSeam", "Four-Seam")  ~ "Fastball",
+      AutoPitchType %in% c("TwoSeamFastBall", "TwoSeamFastball")                ~ "Sinker",
+      AutoPitchType %in% c("SInker")                                            ~ "Sinker",
+      AutoPitchType == "ChangeUp"                                               ~ "Changeup",
+      TRUE                                                                        ~ AutoPitchType
+    ),
+    Count = paste0(Balls, "-", Strikes)
+  ) %>%
+  filter(
+    !AutoPitchType %in% c("Undefined", "Other"),
+    BatterTeam == "My_Team"
+  )
 
 #in-zone calculations, chase set up, whiff, custom game id (to simplify game names)
 df <- df %>%
