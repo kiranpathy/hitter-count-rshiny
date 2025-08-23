@@ -1,0 +1,13 @@
+name: hitter-count-rshiny
+title: hitter-count-rshiny
+username: pathykiran
+account: pathykiran
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15253684
+bundleId: 10808756
+url: https://pathykiran.shinyapps.io/hitter-count-rshiny/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|README.md
